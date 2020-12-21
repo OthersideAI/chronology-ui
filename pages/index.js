@@ -1,65 +1,33 @@
 import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Block from '../components/block'
+import PromptBlock from '../components/prompt-block'
+import CompletionBlock from '../components/completion-block'
+import { useState } from 'react'
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Home() {
+
+  const [blocks, appendBlock] = useState([<PromptBlock id={uuidv4()}/>, <CompletionBlock id={uuidv4()}/>])
+  function addBlock (type = "") {
+    if (type === "Prompt") appendBlock(blocks => [...blocks, <PromptBlock id={uuidv4()}/>])
+    else if (type === "Completion") appendBlock(blocks => [...blocks, <CompletionBlock id={uuidv4()}/>])
+  }
   return (
-    <div className={styles.container}>
+    <div>
       <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+      <main className="container mx-auto divide-y-1">
+        {blocks}
       </main>
+      <button className="fixed bottom-0.5 right-3.5 bg-gray-light hover:bg-gray text-gray-darkest font-bold py-2 px-4 rounded inline-flex items-center" onClick={() => addBlock("Prompt")}>Add a Prompt Block</button>
+      <button className="fixed bottom-0.5 right-4.5 bg-gray-light hover:bg-gray text-gray-darkest font-bold py-2 px-4 rounded inline-flex items-center" onClick={() => addBlock("Completion")}>Add a Completion Block</button>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+      {/* <footer>
+        OthersideAI
+      </footer> */}
     </div>
   )
 }
