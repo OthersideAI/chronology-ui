@@ -4,7 +4,7 @@ import Editor from "@monaco-editor/react";
 import { FillSpinner as Loader } from "react-spinners-kit";
 
 
-export default function LogicBlock(props) {
+export default function CodeBlock({ inputOptions = []}) {
     const [theme, setTheme] = useState("dark");
     const [language, setLanguage] = useState("python");
     const [isEditorReady, setIsEditorReady] = useState(false);
@@ -27,7 +27,7 @@ export default function LogicBlock(props) {
         <>
             <h3>Choose an Input:</h3>
             <select>
-                {props.inputOptions.map(opt => <option>{opt}</option>)}
+                {inputOptions.map(opt => <option>{opt}</option>)}
             </select>
             <br />
             <h3>Choose a Theme:</h3>
