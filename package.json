@@ -10,7 +10,6 @@
   "dependencies": {
     "@monaco-editor/react": "^3.7.4",
     "autoprefixer": "^10.1.0",
-    "codemirror": "^5.58.3",
     "monaco-editor": "^0.21.2",
     "next": "10.0.3",
     "postcss": "^8.2.1",
