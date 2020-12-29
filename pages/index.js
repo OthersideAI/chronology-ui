@@ -6,15 +6,21 @@ import { useState, useEffect } from 'react'
 import CodeBlock from './code-block';
 
 export default function Home() {
+  const completionDefault = {
+    prompt: 'block_0',
+    engine: 'ada',
+    temperature: 50
+  }
+
+  const promptDefault = { "txt": "None" }
+
+  const searchDefault = null
+
   const [completions, setCompletions] = useState({
-    "block_1": {
-      prompt: 'block_0',
-      engine: 'ada',
-      temperature: 50
-    }
+    "block_1": completionDefault
   })
   const [prompts, setPrompts] = useState({
-    "block_0": { "txt":  "None" }
+    "block_0": promptDefault
   })
   const [searches, setSearches] = useState({})
   const [blocks, appendBlock] = useState(['prompt', 'completion'])
@@ -70,50 +76,42 @@ export default function Home() {
       }
     }
 
-    let pythonCode = `from chronological import main, read_prompt, gather, fetch_max_search_doc, cleaned_completion, prepend_prompt\n\n\nasync def logic():\n`
+    let pythonCode = `from chronological import main, read_prompt, gather, fetch_max_search_doc, cleaned_completion\n\n\nasync def logic():\n`
     for (let i = 0; i < vals.length; i++) {
       let val = vals[i]
       if (Object.keys(val)[0] === "completion") {
         const cmpl = val["completion"]
-        if (prompts[cmpl["prompt"]] === undefined) {
-          pythonCode += `\tblock_${i} = await cleaned_completion(${cmpl["prompt"]}, engine="${cmpl["engine"]}", temperature=${cmpl["temperature"] / 100})\n`
-        } else {
-          if (prompts[cmpl["prompt"]]["vars"] === undefined) {
-            pythonCode += `\tblock_${i} = await cleaned_completion(${JSON.stringify(prompts[cmpl["prompt"]]["txt"])}, engine="${cmpl["engine"]}", temperature=${cmpl["temperature"] / 100})\n`
+        if (cmpl !== undefined) {
+          if (prompts[cmpl["prompt"]] === undefined) {
+            pythonCode += `\tblock_${i} = await cleaned_completion(${cmpl["prompt"]}, engine="${cmpl["engine"]}", temperature=${cmpl["temperature"] / 100})\n`
           } else {
-            let cleanedVars = prompts[cmpl["prompt"]]["vars"].split('\n').map(vr => `\"` + vr + `\"`).join(',') // TODO is this caused by newline?
-            pythonCode += `\tblock_${i} = await cleaned_completion(${JSON.stringify(prompts[cmpl["prompt"]]["txt"])}.format(${cleanedVars}), engine="${cmpl["engine"]}", temperature=${cmpl["temperature"] / 100})\n`
+            if (prompts[cmpl["prompt"]]["vars"] === undefined) {
+              pythonCode += `\tblock_${i} = await cleaned_completion(${JSON.stringify(prompts[cmpl["prompt"]]["txt"])}, engine="${cmpl["engine"]}", temperature=${cmpl["temperature"] / 100})\n`
+            } else {
+              let cleanedVars = prompts[cmpl["prompt"]]["vars"].split('\n').map(vr => `\"` + vr + `\"`).join(',') // TODO is this caused by newline?
+              pythonCode += `\tblock_${i} = await cleaned_completion(${JSON.stringify(prompts[cmpl["prompt"]]["txt"])}.format(${cleanedVars}), engine="${cmpl["engine"]}", temperature=${cmpl["temperature"] / 100})\n`
+            }
           }
+        } else {
+          pythonCode += `\t# Error: None for block_${i}, please edit its values first!\n`
         }
+
       }
       // TODO add search with prev blocks functionality AND other fields AND remove blocks from list
       else if (Object.keys(val)[0] === "search") {
         const srch = val["search"]
-        // TODO n and min score cutoff
-        pythonCode += `\tblock_${i} = await fetch_max_search_doc("${srch["query"]}", ${srch["docs"]}, engine="${srch["engine"]}", n=1, min_score_cutoff=0)\n`
-
+        if (srch !== undefined) {
+          // TODO n and min score cutoff
+          pythonCode += `\tblock_${i} = await fetch_max_search_doc("${srch["query"]}", ${srch["docs"]}, engine="${srch["engine"]}", n=1, min_score_cutoff=0)\n`
+        } else {
+          pythonCode += `\t# Error: None for block_${i}, please edit its values first!\n`
+        }
       }
     }
 
     pythonCode += `\n\nmain(logic)`
 
     setCodeBlock(<CodeBlock pyVal={pythonCode} />)
-    // download("chrono_logic.py", pythonCode)
-  }
-
-  function download(filename, text) {
-    var pom = document.createElement('a');
-    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    pom.setAttribute('download', filename);
-
-    if (document.createEvent) {
-      var event = document.createEvent('MouseEvents');
-      event.initEvent('click', true, true);
-      pom.dispatchEvent(event);
-    }
-    else {
-      pom.click();
-    }
   }
 
   return (

@@ -1,5 +1,21 @@
+import { useEffect } from "react"
+
 export default function CompletionBlock({ id = "NYI", prompts, onChange, idx }) {
- 
+    const selections = []
+    const completionDefault = {
+        prompt: 'block_0',
+        engine: 'ada',
+        temperature: 50
+      }
+
+    for (let i = 0; i < idx; i++) {
+        selections.push(<option key={i}>{`block_${i}`}</option>)
+    }
+
+    useEffect(() => {
+        onChange(idx, completionDefault)
+    }, [])
+
     return (
         <div className="w-full" onChange={() => onChange(idx, {
             prompt: document.getElementById(`prompt-select-${id}`).value,
@@ -14,10 +30,7 @@ export default function CompletionBlock({ id = "NYI", prompts, onChange, idx }) 
                         <label htmlFor="Prompt" className="block">Prompt:</label>
                         <select className="block" id={`prompt-select-${id}`}>
                             {/* TODO currently generating all prev blocks, is this correct? */}
-                            {prompts.map((p, p_idx) => {
-                                if (p_idx < idx) return <option key={p_idx}>{`block_${p_idx}`}</option> 
-                                return null
-                            })}
+                            {selections}
                         </select>
                     </div>
                     <div className="inline-block px-3">
