@@ -144,6 +144,7 @@ export default function Home() {
         </div>
         <button className="float-right bg-blue-300 hover:bg-blue-500 text-2xl font-bold py-1 px-4 rounded-full inline-flex items-center" onClick={() => showMenu()}>+</button>
       </div>
+      <a target="_blank" className="float-left fixed bottom-1.5 left-1.5 text-blue-500 underline" href="https://github.com/OthersideAI">Fork us on GitHub!</a>
     </div>
   )
 }
