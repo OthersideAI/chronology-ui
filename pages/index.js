@@ -9,7 +9,8 @@ export default function Home() {
   const completionDefault = {
     prompt: 'block_0',
     engine: 'ada',
-    temperature: 50
+    temperature: 50,
+    topP: 50
   }
 
   const promptDefault = { "txt": "None" }
@@ -83,13 +84,13 @@ export default function Home() {
         const cmpl = val["completion"]
         if (cmpl !== undefined) {
           if (prompts[cmpl["prompt"]] === undefined) {
-            pythonCode += `\tblock_${i} = await cleaned_completion(${cmpl["prompt"]}, engine="${cmpl["engine"]}", temperature=${cmpl["temperature"] / 100})\n`
+            pythonCode += `\tblock_${i} = await cleaned_completion(${cmpl["prompt"]}, engine="${cmpl["engine"]}", temperature=${cmpl["temperature"] / 100}, top_p=${cmpl["topP"] / 100})\n`
           } else {
             if (prompts[cmpl["prompt"]]["vars"] === undefined) {
-              pythonCode += `\tblock_${i} = await cleaned_completion(${JSON.stringify(prompts[cmpl["prompt"]]["txt"])}, engine="${cmpl["engine"]}", temperature=${cmpl["temperature"] / 100})\n`
+              pythonCode += `\tblock_${i} = await cleaned_completion(${JSON.stringify(prompts[cmpl["prompt"]]["txt"])}, engine="${cmpl["engine"]}", temperature=${cmpl["temperature"] / 100}, top_p=${cmpl["topP"] / 100})\n`
             } else {
               let cleanedVars = prompts[cmpl["prompt"]]["vars"].split('\n').map(vr => `\"` + vr + `\"`).join(',') // TODO is this caused by newline?
-              pythonCode += `\tblock_${i} = await cleaned_completion(${JSON.stringify(prompts[cmpl["prompt"]]["txt"])}.format(${cleanedVars}), engine="${cmpl["engine"]}", temperature=${cmpl["temperature"] / 100})\n`
+              pythonCode += `\tblock_${i} = await cleaned_completion(${JSON.stringify(prompts[cmpl["prompt"]]["txt"])}.format(${cleanedVars}), engine="${cmpl["engine"]}", temperature=${cmpl["temperature"] / 100}, top_p=${cmpl["topP"] / 100})\n`
             }
           }
         } else {
