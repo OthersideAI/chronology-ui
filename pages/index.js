@@ -3,16 +3,28 @@ import PromptBlock from '../components/prompt-block'
 import CompletionBlock from '../components/completion-block'
 import SearchBlock from "../components/search-block";
 import { useState, useEffect } from 'react'
+import CodeBlock from './code-block';
 
 export default function Home() {
-  const [completions, setCompletions] = useState({})
-  const [prompts, setPrompts] = useState({})
+  const [completions, setCompletions] = useState({
+    "block_1": {
+      prompt: 'block_0',
+      engine: 'ada',
+      temperature: 50
+    }
+  })
+  const [prompts, setPrompts] = useState({
+    "block_0": { "txt":  "None" }
+  })
   const [searches, setSearches] = useState({})
   const [blocks, appendBlock] = useState(['prompt', 'completion'])
-  
+  let [codeBlock, setCodeBlock] = useState(null)
+
   const [promptIDs, addPromptID] = useState(new Set().add('block_0'))
 
   const [isMenuOpen, setMenu] = useState(false)
+
+
 
   function appendCompletion(idx, val) {
     setCompletions({ ...completions, [`block_${idx}`]: val })
@@ -54,7 +66,7 @@ export default function Home() {
       } else if (block === "completion") {
         vals.push({ "completion": completions[`block_${i}`] })
       } else if (block === "search") {
-        vals.push({"search": searches[`block_${i}`]})
+        vals.push({ "search": searches[`block_${i}`] })
       }
     }
 
@@ -74,16 +86,19 @@ export default function Home() {
           }
         }
       }
+      // TODO add search with prev blocks functionality AND other fields AND remove blocks from list
       else if (Object.keys(val)[0] === "search") {
         const srch = val["search"]
         // TODO n and min score cutoff
         pythonCode += `\tblock_${i} = await fetch_max_search_doc("${srch["query"]}", ${srch["docs"]}, engine="${srch["engine"]}", n=1, min_score_cutoff=0)\n`
+
       }
     }
 
     pythonCode += `\n\nmain(logic)`
 
-    download("chrono_logic.py", pythonCode)
+    setCodeBlock(<CodeBlock pyVal={pythonCode} />)
+    // download("chrono_logic.py", pythonCode)
   }
 
   function download(filename, text) {
@@ -92,14 +107,14 @@ export default function Home() {
     pom.setAttribute('download', filename);
 
     if (document.createEvent) {
-        var event = document.createEvent('MouseEvents');
-        event.initEvent('click', true, true);
-        pom.dispatchEvent(event);
+      var event = document.createEvent('MouseEvents');
+      event.initEvent('click', true, true);
+      pom.dispatchEvent(event);
     }
     else {
-        pom.click();
+      pom.click();
     }
-}
+  }
 
   return (
     <div className="container mx-auto px-2 py-1">
@@ -120,6 +135,7 @@ export default function Home() {
             return (<SearchBlock id={`block_${idx}`} onChange={appendSearch} idx={idx} />)
           }
         })}
+        {codeBlock}
       </main>
 
       <div className="fixed bottom-1.5 right-1.5 z-50">
