@@ -8,7 +8,7 @@ export default function PromptBlock({ id = "NYI", onChange, prompts , idx}) {
                 cb(evt.target.result)
             }
             reader.onerror = function (evt) {
-                console.log("error reading file");
+                console.log("error reading file.");
             }
         }
 
