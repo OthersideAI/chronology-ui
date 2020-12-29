@@ -15,8 +15,6 @@ export default function Home() {
 
   const promptDefault = { "txt": "None" }
 
-  const searchDefault = null
-
   const [completions, setCompletions] = useState({
     "block_1": completionDefault
   })

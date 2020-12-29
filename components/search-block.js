@@ -1,8 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function SearchBlock({ id = "NYI", onChange, idx }) {
 
     const [fileContent, setFileContent] = useState(null)
+
+    const searchDefault = { "engine": "ada", query: "", docs: "None" }
+    
 
     function getFileContents(fileID, cb) {
         var txtFile = document.getElementById(fileID).files[0];
@@ -17,6 +20,10 @@ export default function SearchBlock({ id = "NYI", onChange, idx }) {
             }
         }
     }
+
+    useEffect(() => {
+        onChange(idx, searchDefault)
+    }, [])
 
     return (
         <div className="w-full" onChange={() => onChange(idx, {
