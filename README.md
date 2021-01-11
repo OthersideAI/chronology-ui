@@ -39,6 +39,13 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 Once your changes are committed, please submit a PR!
 
+### Open Bounties
+
+- [ ] add sliders for every field in `Completion Blocks`
+- [ ] add `Logic Blocks`, allowing users to add code inline
+- [ ] mobile support
+- [ ] add testing suite
+
 ## Learn More
 
 To learn more about OthersideAI, take a look at the following resources:
